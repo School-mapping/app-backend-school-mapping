@@ -5,11 +5,9 @@ import java.time.format.DateTimeFormatter;
 
 public class AplicacaoIdeb {
 
-    // Criamos um formatador para deixar a data e hora bonitinhas no log
-    private static final DateTimeFormatter FORMATADOR_DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private static final DateTimeFormatter FORMATADOR_DATA_HORA = DateTimeFormatter.ofPattern("yyyy/MM/dd H:mm:ss");
 
     public static void main(String[] argumentos) throws InterruptedException {
-        // Lista de escolas que vamos usar no relatório
         String[] listaDeEscolas = {
                 "Padre Antônio de Almeida",
                 "Professora Marli Ferreira da Costa",
@@ -23,37 +21,64 @@ public class AplicacaoIdeb {
                 "Doutor Paulo César Martins"
         };
 
-        // Notas IDEB correspondentes às escolas acima (mesma ordem)
         Double[] listaDeNotasIdeb = {
                 4.2, 6.1, 7.5, 5.3, 3.8, 6.9, 5.0, 4.7, 7.8, 6.4
         };
 
-        // Aqui começa o fluxo do programa
-        // Primeiro registramos no log (com data/hora) e depois mostramos a mensagem animada
-        registrarLog("Inicializando sistema de geração de relatórios...");
+        registrarLog("INFO", "Inicializando sistema de geração de relatórios...");
         RelatorioDesempenhoIdeb.exibirMensagemDigitada("Gerando relatório de desempenho IDEB");
 
         System.out.println();
-        registrarLog("Carregando e processando dados das escolas...");
-        RelatorioDesempenhoIdeb.exibirAnimacaoProcessamento("Processando dados", 3);
+        simularProcessamentoDados();
 
-        // Mostramos que o relatório está pronto e simulamos uma barra de progresso
-        registrarLog("Relatório pronto para visualização.");
+        registrarLog("SUCESSO", "Relatório pronto para visualização.");
         RelatorioDesempenhoIdeb.exibirBarraDeProgresso(100);
 
-        // Agora exibimos cada escola com sua nota e classificação (baixo, médio, alto)
-        registrarLog("Exibindo resultados individuais...");
+        registrarLog("INFO", "Exibindo resultados individuais...");
         RelatorioDesempenhoIdeb.exibirRelatorioDeEscolas(listaDeEscolas, listaDeNotasIdeb);
 
-        // Calculamos a média geral do IDEB e exibimos no final
         Double mediaGeral = RelatorioDesempenhoIdeb.calcularMediaIdeb(listaDeNotasIdeb);
-        registrarLog("Cálculo concluído da média geral do IDEB.");
-        RelatorioDesempenhoIdeb.exibirMensagemDigitada("📈 Média geral do IDEB: " + String.format("%.2f", mediaGeral));
+        registrarLog("INFO", "Média geral do IDEB: " + String.format("%.2f", mediaGeral));
     }
 
-    // Esse método é nosso "simulador de log" → imprime a mensagem com data/hora
-    public static void registrarLog(String mensagem) {
+    public static void registrarLog(String tipo, String mensagem) {
         String dataHoraAtual = LocalDateTime.now().format(FORMATADOR_DATA_HORA);
-        System.out.println("[" + dataHoraAtual + "] " + mensagem);
+        String prefixo;
+
+        switch (tipo.toUpperCase()) {
+            case "INFO":
+                prefixo = "INFO";
+                break;
+            case "PROCESSO":
+                prefixo = "PROCESSO";
+                break;
+            case "SUCESSO":
+                prefixo = "SUCESSO";
+                break;
+            case "ERRO":
+                prefixo = "ERRO";
+                break;
+            case "ALERTA":
+                prefixo = "ALERTA";
+                break;
+            default:
+                prefixo = "LOG";
+        }
+
+        System.out.println("[" + dataHoraAtual + "] " + prefixo + ": " + mensagem);
+    }
+
+    public static void simularProcessamentoDados() throws InterruptedException {
+        registrarLog("PROCESSO", "Conectando ao banco de dados...");
+        Thread.sleep(1000);
+
+        registrarLog("PROCESSO", "Validando estrutura dos dados...");
+        Thread.sleep(1000);
+
+        registrarLog("PROCESSO", "Verificando inconsistências...");
+        Thread.sleep(1000);
+
+        registrarLog("SUCESSO", "Dados validados com sucesso.");
+        RelatorioDesempenhoIdeb.exibirAnimacaoProcessamento("Finalizando processamento", 2);
     }
 }
