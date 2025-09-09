@@ -13,16 +13,11 @@ public class AplicacaoIdeb {
                 "Professora Marli Ferreira da Costa",
                 "Professor Renato Souza Lima",
                 "Capitão Sérgio Oliveira Mendes",
-                "Professor Álvaro Nogueira Pinto",
-                "Doutor Henrique Bastos de Moraes",
-                "Maestro Celso Andrade Figueira",
-                "Professor Ricardo Tavares Monteiro",
-                "Professora Lúcia Helena Barbosa",
-                "Doutor Paulo César Martins"
+                "Professor Álvaro Nogueira Pinto"
         };
 
         Double[] listaDeNotasIdeb = {
-                4.2, 6.1, 7.5, 5.3, 3.8, 6.9, 5.0, 4.7, 7.8, 6.4
+                4.2, 6.1, 7.5, 5.3, 3.8
         };
 
         registrarLog("INFO", "Inicializando sistema de geração de relatórios...");
@@ -70,15 +65,15 @@ public class AplicacaoIdeb {
 
     public static void simularProcessamentoDados() throws InterruptedException {
         registrarLog("PROCESSO", "Conectando ao banco de dados...");
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         registrarLog("PROCESSO", "Validando estrutura dos dados...");
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         registrarLog("PROCESSO", "Verificando inconsistências...");
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         registrarLog("SUCESSO", "Dados validados com sucesso.");
-        RelatorioDesempenhoIdeb.exibirAnimacaoProcessamento("Finalizando processamento", 2);
+        RelatorioDesempenhoIdeb.exibirAnimacaoProcessamento("Finalizando processamento", 1);
     }
 }

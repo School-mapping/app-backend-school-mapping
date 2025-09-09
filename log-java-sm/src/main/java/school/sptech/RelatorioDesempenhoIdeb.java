@@ -10,7 +10,7 @@ public class RelatorioDesempenhoIdeb {
     public static void exibirMensagemDigitada(String texto) throws InterruptedException {
         for (Character caractere : texto.toCharArray()) {
             System.out.print(caractere);
-            Thread.sleep(60);
+            Thread.sleep(40);
         }
         System.out.println();
     }
@@ -22,7 +22,7 @@ public class RelatorioDesempenhoIdeb {
         while (System.currentTimeMillis() < tempoFinal) {
             for (String simbolo : simbolosAnimacao) {
                 System.out.print("\r" + textoBase + " " + simbolo);
-                Thread.sleep(200);
+                Thread.sleep(120);
             }
         }
         System.out.println();
@@ -32,14 +32,14 @@ public class RelatorioDesempenhoIdeb {
         for (int i = 0; i <= porcentagemFinal; i += 10) {
             String barra = "[" + "=".repeat(i / 10) + " ".repeat((100 - i) / 10) + "] " + i + "%";
             System.out.print("\r" + barra);
-            Thread.sleep(290);
+            Thread.sleep(180);
         }
         System.out.println();
     }
 
     public static void exibirRelatorioDeEscolas(String[] escolas, Double[] notas) throws InterruptedException {
         for (int indice = 0; indice < escolas.length; indice++) {
-            Thread.sleep(500);
+            Thread.sleep(250);
             String classificacao = obterClassificacaoDesempenho(notas[indice]);
             String dataHora = LocalDateTime.now().format(FORMATADOR_DATA_HORA);
 
