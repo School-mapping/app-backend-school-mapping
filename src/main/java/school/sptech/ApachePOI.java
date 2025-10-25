@@ -2,10 +2,13 @@ package school.sptech;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,19 +18,35 @@ public class ApachePOI {
 
     Integer linhasPuladas = 0;
     Integer linhasLidas = 0;
+
+    BancoRepositorio bancoRepositorio = new BancoRepositorio();
+
     List<Endereco> listaEnderecos = new ArrayList<>();
 
-//    Lendo Info_escolas_municipais
+    private final S3Client s3;
+    private final String bucket = "s3-raw-pi";
+
+    public ApachePOI(S3Client s3) {
+        this.s3 = s3;
+    }
+
+    //    Lendo Info_escolas_municipais
     public List<Escola> extrairEscolas() {
 
         List<Escola> listaEscolas = new ArrayList<>();
 
         try (
-                InputStream arquivo = new FileInputStream("Info_escolas_municipais.xlsx");
+                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                        .bucket(bucket)
+                        .key("Info_escolas_municipais.xlsx")
+                        .build());
                 Workbook workbook = new XSSFWorkbook(arquivo)
         ) {
 
             System.out.println("Iniciando leitura [Info_escolas_municipais.xlsx]...");
+
+            LocalDateTime agora = LocalDateTime.now();
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Iniciando leitura das Escolas", "ApachePOI");
 
             Sheet folha = workbook.getSheetAt(0); // Pegando a primeira folha (única) da planilha.
 
@@ -97,7 +116,8 @@ public class ApachePOI {
         } catch (IOException e) {
 
             System.out.println(e);
-//          adicionar logs dos erros no BD
+            LocalDateTime agora = LocalDateTime.now();
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "ERROR", "Erro ao tentar iniciar leitura das Escolas.", "ApachePOI");
         }
 
         return listaEscolas;
@@ -165,11 +185,17 @@ public class ApachePOI {
         List<Ideb> listaDadosIdeb = new ArrayList<>();
 
         try (
-                InputStream arquivo = new FileInputStream("ideb_territorios-3550308-2023-EM.xlsx");
+                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                        .bucket(bucket)
+                        .key("ideb_territorios-3550308-2023-EM.xlsx")
+                        .build());
                 Workbook workbook = new XSSFWorkbook(arquivo)
         ) {
 
             System.out.println("Iniciando leitura [ideb_territorios-3550308-2023-EM.xlsx]...");
+
+            LocalDateTime agora = LocalDateTime.now();
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
 
             Sheet folha = workbook.getSheet("escolas");
 
@@ -194,7 +220,8 @@ public class ApachePOI {
         } catch (IOException e) {
 
             System.out.println(e);
-//          adicionar Logs no BD
+            LocalDateTime agora = LocalDateTime.now();
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "ERROR", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
         }
 
         return listaDadosIdeb;
