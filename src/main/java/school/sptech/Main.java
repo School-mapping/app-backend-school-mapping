@@ -2,6 +2,7 @@ package school.sptech;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +12,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        ApachePOI apachepoi = new ApachePOI();
+        S3Provider s3Provider = new S3Provider();
+        S3Client s3Client = s3Provider.getS3Client();
+        ApachePOI apachepoi = new ApachePOI(s3Client);
         BancoRepositorio bancoRepositorio = new BancoRepositorio();
 
         List<Escola> escolas = apachepoi.extrairEscolas();
@@ -23,7 +26,6 @@ public class Main {
         for (int i = 0; i < escolas.size(); i++) {
 
             Escola escolaAtual = escolas.get(i);
-           Boolean encontrado = false;
 
             for (int j = 0; j < ideb.size(); j++) {
 
@@ -31,22 +33,9 @@ public class Main {
 
                 if (dadoAtual.getCodigoInep().equalsIgnoreCase(escolaAtual.getCodigoInep())) {
                     escolaAtual.setIdeb(dadoAtual.getIdeb());
-                   encontrado = true;
                     break;
                 }
             }
-
-            LocalDateTime presente = LocalDateTime.now();
-
-           if (encontrado) {
-               contador++;
-               bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", presente, "Info", "Código Inep encontrado e inserido com sucesso.", "ApachePOI");
-               System.out.println("[" + presente + "] INFO - Código Inep encontrado e inserido com sucesso. - Main");
-           }
-           else {
-               System.out.println("[" + presente + "] INFO - Código Inep não encontrado, linha " + i + " - Main");
-               bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", presente, "Info", "Código Inep não encontrado, linha " + i, "ApachePOI");
-           }
         }
 
         for (Escola escola : escolas) {
@@ -84,9 +73,9 @@ public class Main {
 
         System.out.println("\n-------------------- Logs -------------------");
         System.out.println("[" + agora + "] INFO - Leitura concluída: " + apachepoi.getLinhasLidas() + " linhas processadas.");
-        bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Leitura concluída: " + apachepoi.getLinhasLidas() + " linhas processadas.", "ApachePOI");
+        bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Leitura concluída: " + apachepoi.getLinhasLidas() + " linhas processadas.", "Main");
         System.out.println("[" + agora + "] INFO - Linhas puladas: " + apachepoi.getLinhasPuladas() + ".");
-        bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Linhas puladas: " + apachepoi.getLinhasPuladas(), "ApachePOI");
+        bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Linhas puladas: " + apachepoi.getLinhasPuladas(), "Main");
         System.out.println("[" + agora + "] INFO - Dados cruzados pelo codigoInep: " + contador + " linhas processadas.");
         bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Dados cruzados pelo codigoInep: " + contador + " linhas processadas.", "Main");
     }
