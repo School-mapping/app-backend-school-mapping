@@ -33,6 +33,7 @@ public class Main {
 
                 if (dadoAtual.getCodigoInep().equalsIgnoreCase(escolaAtual.getCodigoInep())) {
                     escolaAtual.setIdeb(dadoAtual.getIdeb());
+                    contador++;
                     break;
                 }
             }
