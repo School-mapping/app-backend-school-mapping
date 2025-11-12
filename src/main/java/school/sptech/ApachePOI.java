@@ -59,8 +59,7 @@ public class ApachePOI {
                                 linha.getCell(2) == null ||
                                 linha.getCell(8) == null ||
                                 linha.getCell(17) == null ||
-                        linha.getCell(18) == null) {
-
+                                linha.getCell(18) == null) {
                     linhasPuladas++;
                     continue; // Pula para o próximo indice (i++)
                 }
@@ -75,10 +74,8 @@ public class ApachePOI {
                 String numero = extrairNumero(endereco);
                 String bairro = extrairBairro(endereco);
                 String cep = extrairCep(endereco);
-                Long latitude = (long) linha.getCell(17).getNumericCellValue();
-                Long longitude = (long) linha.getCell(18).getNumericCellValue();
 
-                String zona;
+                Regiao regiao;
                 Character digitoCep = cep.charAt(1);
 
 //                Centro: CEP de 01000 a 01599
@@ -89,27 +86,27 @@ public class ApachePOI {
 
                 switch (digitoCep) {
                     case '1':
-                        zona = "CENTRO";
+                        regiao = Regiao.CENTRO;
                         break;
                     case '2':
-                        zona = "NORTE";
+                        regiao = Regiao.NORTE;
                         break;
                     case '3':
                     case '8':
-                        zona = "LESTE";
+                        regiao = Regiao.LESTE;
                         break;
                     case '4':
-                        zona = "SUL";
+                        regiao = Regiao.SUL;
                         break;
                     case '5':
-                        zona = "OESTE";
+                        regiao = Regiao.OESTE;
                         break;
                     default:
-                        zona = "";
+                        regiao = null;
                 }
 
-                Escola escola = new Escola(nome, codigoInep, null, cep, latitude, longitude);
-                Endereco enderecoEscola = new Endereco(logradouro, numero, bairro, cep, zona);
+                Endereco enderecoEscola = new Endereco(logradouro, numero, bairro, cep, regiao);
+                Escola escola = new Escola(nome, codigoInep, cep, enderecoEscola);
                 listaEscolas.add(escola);
                 listaEnderecos.add(enderecoEscola);
             }
@@ -171,15 +168,15 @@ public class ApachePOI {
         Pattern padrao = Pattern.compile("\\d{5}-\\d{3}");
         Matcher procurarCep = padrao.matcher(endereco);
 
-            if (procurarCep.find()) {
-                return procurarCep.group();
-            } else {
-                System.out.println("CEP está undefined!");
-                return null;
+        if (procurarCep.find()) {
+            return procurarCep.group();
+        } else {
+            System.out.println("CEP está undefined!");
+            return null;
         }
     }
 
-//    Lendo ideb_territorios-3550308-2023-EM
+    //    Lendo ideb_territorios-3550308-2023-EM
     public List<Ideb> extrairIdeb() {
 
         List<Ideb> listaDadosIdeb = new ArrayList<>();
