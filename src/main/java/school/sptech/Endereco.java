@@ -1,26 +1,20 @@
 package school.sptech;
 
 public class Endereco {
-    
+
+    private Integer id;
     private String logradouro;
     private String numero;
     private String bairro;
     private String cep;
-    private String zona;
+    private Regiao regiao;
 
-    public Endereco(String logradouro, String numero, String bairro, String cep) {
+    public Endereco(String logradouro, String numero, String bairro, String cep, Regiao regiao) {
         this.logradouro = logradouro;
         this.numero = numero;
         this.bairro = bairro;
         this.cep = cep;
-    }
-
-    public Endereco(String logradouro, String numero, String bairro, String cep, String zona) {
-        this.logradouro = logradouro;
-        this.numero = numero;
-        this.bairro = bairro;
-        this.cep = cep;
-        this.zona = zona;
+        this.regiao = regiao;
     }
 
     public String getLogradouro() {
@@ -55,22 +49,31 @@ public class Endereco {
         this.cep = cep;
     }
 
-    public String getZona() {
-        return zona;
+    public Integer getId() {
+        return id;
     }
 
-    public void setZona(String zona) {
-        this.zona = zona;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Regiao getRegiao() {
+        return regiao;
+    }
+
+    public void setRegiao(Regiao regiao) {
+        this.regiao = regiao;
     }
 
     @Override
     public String toString() {
         return "Endereco{" +
-                "logradouro='" + logradouro + '\'' +
+                "id=" + id +
+                ", logradouro='" + logradouro + '\'' +
                 ", numero='" + numero + '\'' +
                 ", bairro='" + bairro + '\'' +
                 ", cep='" + cep + '\'' +
-                ", zona='" + zona + '\'' +
+                ", regiao=" + regiao +
                 '}';
     }
 }

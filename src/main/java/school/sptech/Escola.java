@@ -2,20 +2,17 @@ package school.sptech;
 
 public class Escola {
 
+    private Integer id;
     private String nome;
     private String codigoInep;
-    private Double ideb;
     private String cep;
-    private Long latitude;
-    private Long longitude;
+    private Endereco endereco;
 
-    public Escola(String nome, String codigoInep, Double ideb, String cep, Long latitude, Long longitude) {
+    public Escola(String nome, String codigoInep, String cep, Endereco endereco) {
         this.nome = nome;
         this.codigoInep = codigoInep;
-        this.ideb = ideb;
         this.cep = cep;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.endereco = endereco;
     }
 
     public String getNome() {
@@ -30,14 +27,6 @@ public class Escola {
         return codigoInep;
     }
 
-    public Double getIdeb() {
-        return ideb;
-    }
-
-    public void setIdeb(Double ideb) {
-        this.ideb = ideb;
-    }
-
     public void setCodigoInep(String codigoInep) {
         this.codigoInep = codigoInep;
     }
@@ -50,31 +39,42 @@ public class Escola {
         this.cep = cep;
     }
 
-    public Long getLatitude() {
-        return latitude;
+    public Integer getId() {
+        return id;
     }
 
-    public void setLatitude(Long latitude) {
-        this.latitude = latitude;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Long getLongitude() {
-        return longitude;
+    public Endereco getEndereco() {
+        return endereco;
     }
 
-    public void setLongitude(Long longitude) {
-        this.longitude = longitude;
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    public Regiao getRegiao() {
+        return regiao;
+    }
+
+    public void setRegiao(Regiao regiao) {
+        this.regiao = regiao;
     }
 
     @Override
     public String toString() {
         return "Escola{" +
-                "nome='" + nome + '\'' +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
                 ", codigoInep='" + codigoInep + '\'' +
                 ", ideb=" + ideb +
                 ", cep='" + cep + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
+                ", endereco=" + endereco +
+                ", regiao=" + regiao +
                 '}';
     }
 }
