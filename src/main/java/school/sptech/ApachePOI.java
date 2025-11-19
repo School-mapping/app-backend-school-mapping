@@ -2,15 +2,20 @@ package school.sptech;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +24,7 @@ public class ApachePOI {
     Integer linhasPuladas = 0;
     Integer linhasLidas = 0;
 
+    private static final Logger logger = LoggerFactory.getLogger(ApachePOI.class);
     BancoRepositorio bancoRepositorio = new BancoRepositorio();
 
     List<Endereco> listaEnderecos = new ArrayList<>();
@@ -33,22 +39,32 @@ public class ApachePOI {
     //    Lendo Info_escolas_municipais
     public List<Escola> extrairEscolas() {
 
+        String diretorioPastasTemporarias = "C:/Users/kauan/Desktop/SchoolMapping/PlanilhasDados";
+
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
         List<Escola> listaEscolas = new ArrayList<>();
+
+        String key = "Info_escolas_municipais.xlsx";
 
         try (
                 InputStream arquivo = s3.getObject(GetObjectRequest.builder()
                         .bucket(bucket)
-                        .key("Info_escolas_municipais.xlsx")
+                        .key(key)
                         .build());
                 Workbook workbook = new XSSFWorkbook(arquivo)
         ) {
 
-            System.out.println("Iniciando leitura [Info_escolas_municipais.xlsx]...");
+            logger.info(" {} Iniciando leitura [{}]...", timestamp, key);
 
             LocalDateTime agora = LocalDateTime.now();
-            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Iniciando leitura das Escolas", "ApachePOI");
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Iniciando leitura das Escolas", "ApachePOI");
 
             Sheet folha = workbook.getSheetAt(0); // Pegando a primeira folha (única) da planilha.
+
+            Integer INDEX_INFO_NOME = 1;
+            Integer INDEX_INFO_CODIGO_INEP = 2;
+            Integer INDEX_INFO_ENDERECO = 8;
 
             for (int i = 1; i <= folha.getLastRowNum(); i++) {
 
@@ -66,10 +82,11 @@ public class ApachePOI {
 
                 linhasLidas++;
 
-                String nome = linha.getCell(1).getStringCellValue();
+
+                String nome = linha.getCell(INDEX_INFO_NOME).getStringCellValue();
 //                System.out.println(linha.getCell(2).getCellType());
-                String codigoInep = String.valueOf((long) linha.getCell(2).getNumericCellValue());
-                String endereco = linha.getCell(8).getStringCellValue();
+                String codigoInep = String.valueOf((long) linha.getCell(INDEX_INFO_CODIGO_INEP).getNumericCellValue());
+                String endereco = linha.getCell(INDEX_INFO_ENDERECO).getStringCellValue();
                 String logradouro = extrairLogradouro(endereco);
                 String numero = extrairNumero(endereco);
                 String bairro = extrairBairro(endereco);
@@ -112,72 +129,113 @@ public class ApachePOI {
             }
         } catch (IOException e) {
 
-            System.out.println(e);
+            logger.error("Erro ao tentar iniciar leitura das Escolas.", e);
             LocalDateTime agora = LocalDateTime.now();
-            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "ERROR", "Erro ao tentar iniciar leitura das Escolas.", "ApachePOI");
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao tentar iniciar leitura das Escolas.", "ApachePOI");
         }
 
         return listaEscolas;
     }
 
     private String extrairLogradouro(String endereco) {
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
-        String[] logradouro = endereco.split(",");
-        return logradouro[0].trim();
+        try {
+            String[] logradouro = endereco.split(",");
+            return logradouro[0].trim();
+        } catch (Exception e) {
+            logger.error("Erro ao extrair o logradouro do endereço.", e);
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao extrair o logradouro do endereço.", "ApachePOI");
+            return "";
+        }
     }
 
     private String extrairNumero(String endereco) {
 
-        String[] divisor = endereco.split(",");
-        String depoisDaVirgula = divisor[1].trim();
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
-        String[] numero = depoisDaVirgula.split(" ");
-        return numero[0].trim();
+        try {
+            String[] divisor = endereco.split(",");
+            String depoisDaVirgula = divisor[1].trim();
+
+            String[] numero = depoisDaVirgula.split(" ");
+            return numero[0].trim();
+
+        } catch (Exception e) {
+            logger.error("Erro ao extrair o número do endereço.", e);
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao tentar iniciar leitura das Escolas.", "ApachePOI");
+            return "";
+        }
     }
 
     private String extrairBairro(String endereco) {
 
-        String bairro = "";
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
-        String[] divisor = endereco.split(",");
-        String depoisDaVirgula = divisor[1].trim();
+        try {
+            String bairro = "";
 
-        String[] depoisDoNumero = depoisDaVirgula.split(" ");
+            String[] divisor = endereco.split(",");
+            String depoisDaVirgula = divisor[1].trim();
 
-        for (int i = 1; i < depoisDoNumero.length; i++) {
+            String[] depoisDoNumero = depoisDaVirgula.split(" ");
 
-            String palavra = depoisDoNumero[i];
+            for (int i = 1; i < depoisDoNumero.length; i++) {
 
-            if (palavra.endsWith(".")) {
-                palavra = palavra.replace(".", "");
-                bairro += palavra;
-                break;
-            } else {
-                bairro += palavra + " ";
+                try {
+                    String palavra = depoisDoNumero[i];
+
+                    if (palavra.endsWith(".")) {
+                        palavra = palavra.replace(".", "");
+                        bairro += palavra;
+                        break;
+                    } else {
+                        bairro += palavra + " ";
+                    }
+                } catch (Exception e) {
+                    logger.error(" {} Erro ao extrair o bairro do endereço.", timestamp, e);
+                    bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao extrair o bairro do endereço.", "ApachePOI");
+                    return "";
+                }
             }
-        }
 
-        return bairro.trim();
+            return bairro.trim();
+        } catch (Exception e) {
+            logger.error("{} Erro ao extrair o bairro do endereço.", timestamp, e);
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao extrair o bairro do endereço.", "ApachePOI");
+            return "";
+        }
     }
 
     //    Metodo com Regex para encontrar o CEP no endereço.
     private String extrairCep(String endereco) {
 
-        if (endereco == null) return "";
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
-        Pattern padrao = Pattern.compile("\\d{5}-\\d{3}");
-        Matcher procurarCep = padrao.matcher(endereco);
+        try {
+            if (endereco == null) return "";
 
-        if (procurarCep.find()) {
-            return procurarCep.group();
-        } else {
-            System.out.println("CEP está undefined!");
-            return null;
+            Pattern padrao = Pattern.compile("\\d{5}-\\d{3}");
+            Matcher procurarCep = padrao.matcher(endereco);
+
+            if (procurarCep.find()) {
+                return procurarCep.group();
+            } else {
+                System.out.println("CEP está undefined!");
+                return null;
+            }
+
+        } catch (Exception e) {
+            logger.error("{} Erro ao extrair o CEP do endereço.", timestamp, e);
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_origem, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao extrair o CEP do endereço.", "ApachePOI");
+            return "";
         }
     }
 
     //    Lendo ideb_territorios-3550308-2023-EM
     public List<Ideb> extrairIdeb() {
+
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
         List<Ideb> listaDadosIdeb = new ArrayList<>();
 
@@ -191,8 +249,7 @@ public class ApachePOI {
 
             System.out.println("Iniciando leitura [ideb_territorios-3550308-2023-EM.xlsx]...");
 
-            LocalDateTime agora = LocalDateTime.now();
-            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "INFO", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
+            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "INFO", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
 
             Sheet folha = workbook.getSheet("escolas");
 
@@ -211,12 +268,12 @@ public class ApachePOI {
                 String codigoInepTratado = String.valueOf(codigoInep);
                 Double ideb = linha.getCell(4).getNumericCellValue();
 
-                Ideb idebEscolar = new Ideb(codigoInepTratado, ideb);
+                Ideb idebEscolar = new Ideb(codigoInepTratado, ideb, LocalDate.now().getYear(), null);
                 listaDadosIdeb.add(idebEscolar);
             }
         } catch (IOException e) {
 
-            System.out.println(e);
+            logger.error("{} Erro ao tentar iniciar leitura do Ideb.", timestamp, e);
             LocalDateTime agora = LocalDateTime.now();
             bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data, nivel, descricao, origem) VALUES (?, ?, ?, ?)", agora, "ERROR", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
         }

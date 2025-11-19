@@ -1,15 +1,13 @@
 package school.sptech;
 
-import java.time.Year;
-
 public class Ideb {
 
     private String codigoInep;
     private Double ideb;
-    private Year anoEmissao;
+    private Integer anoEmissao;
     private Escola escola;
 
-    public Ideb(String codigoInep, Double ideb, Year anoEmissao, Escola escola) {
+    public Ideb(String codigoInep, Double ideb, Integer anoEmissao, Escola escola) {
         this.codigoInep = codigoInep;
         this.ideb = ideb;
         this.anoEmissao = anoEmissao;
@@ -32,11 +30,11 @@ public class Ideb {
         this.ideb = ideb;
     }
 
-    public Year getAnoEmissao() {
+    public Integer getAnoEmissao() {
         return anoEmissao;
     }
 
-    public void setAnoEmissao(Year anoEmissao) {
+    public void setAnoEmissao(Integer anoEmissao) {
         this.anoEmissao = anoEmissao;
     }
 

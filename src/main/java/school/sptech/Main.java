@@ -32,7 +32,6 @@ public class Main {
                 Ideb dadoAtual = ideb.get(j);
 
                 if (dadoAtual.getCodigoInep().equalsIgnoreCase(escolaAtual.getCodigoInep())) {
-                    escolaAtual.setIdeb(dadoAtual.getIdeb());
                     contador++;
                     break;
                 }
