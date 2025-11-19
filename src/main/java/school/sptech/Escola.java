@@ -2,20 +2,18 @@ package school.sptech;
 
 public class Escola {
 
+    private Integer id;
     private String nome;
     private String codigoInep;
-    private Double ideb;
-    private String cep;
-    private Long latitude;
-    private Long longitude;
+    private Endereco endereco;
 
-    public Escola(String nome, String codigoInep, Double ideb, String cep, Long latitude, Long longitude) {
+    public Escola(String nome, String codigoInep, Endereco endereco) {
         this.nome = nome;
         this.codigoInep = codigoInep;
-        this.ideb = ideb;
-        this.cep = cep;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.endereco = endereco;
+    }
+
+    public Escola() {
     }
 
     public String getNome() {
@@ -30,51 +28,33 @@ public class Escola {
         return codigoInep;
     }
 
-    public Double getIdeb() {
-        return ideb;
-    }
-
-    public void setIdeb(Double ideb) {
-        this.ideb = ideb;
-    }
-
     public void setCodigoInep(String codigoInep) {
         this.codigoInep = codigoInep;
     }
 
-    public String getCep() {
-        return cep;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCep(String cep) {
-        this.cep = cep;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Long getLatitude() {
-        return latitude;
+    public Endereco getEndereco() {
+        return endereco;
     }
 
-    public void setLatitude(Long latitude) {
-        this.latitude = latitude;
-    }
-
-    public Long getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Long longitude) {
-        this.longitude = longitude;
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
     }
 
     @Override
     public String toString() {
         return "Escola{" +
-                "nome='" + nome + '\'' +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
                 ", codigoInep='" + codigoInep + '\'' +
-                ", ideb=" + ideb +
-                ", cep='" + cep + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
+                ", endereco=" + endereco +
                 '}';
     }
 }

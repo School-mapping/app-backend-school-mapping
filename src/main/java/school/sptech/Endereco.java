@@ -1,26 +1,26 @@
 package school.sptech;
 
 public class Endereco {
-    
+
+    private Integer id;
     private String logradouro;
     private String numero;
     private String bairro;
     private String cep;
-    private String zona;
+    private Regiao regiao;
+    private String codigoInep;
 
-    public Endereco(String logradouro, String numero, String bairro, String cep) {
+    public Endereco(String logradouro, String numero, String bairro, String cep, Regiao regiao, String codigoInep) {
         this.logradouro = logradouro;
         this.numero = numero;
         this.bairro = bairro;
         this.cep = cep;
+        this.regiao = regiao;
+        this.codigoInep = codigoInep;
     }
 
-    public Endereco(String logradouro, String numero, String bairro, String cep, String zona) {
-        this.logradouro = logradouro;
-        this.numero = numero;
-        this.bairro = bairro;
-        this.cep = cep;
-        this.zona = zona;
+    public Endereco() {
+
     }
 
     public String getLogradouro() {
@@ -55,22 +55,39 @@ public class Endereco {
         this.cep = cep;
     }
 
-    public String getZona() {
-        return zona;
+    public Integer getId() {
+        return id;
     }
 
-    public void setZona(String zona) {
-        this.zona = zona;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Regiao getRegiao() {
+        return regiao;
+    }
+
+    public void setRegiao(Regiao regiao) {
+        this.regiao = regiao;
+    }
+
+    public String getCodigoInep() {
+        return codigoInep;
+    }
+
+    public void setCodigoInep(String codigoInep) {
+        this.codigoInep = codigoInep;
     }
 
     @Override
     public String toString() {
         return "Endereco{" +
-                "logradouro='" + logradouro + '\'' +
+                "id=" + id +
+                ", logradouro='" + logradouro + '\'' +
                 ", numero='" + numero + '\'' +
                 ", bairro='" + bairro + '\'' +
                 ", cep='" + cep + '\'' +
-                ", zona='" + zona + '\'' +
+                ", regiao=" + regiao +
                 '}';
     }
 }
