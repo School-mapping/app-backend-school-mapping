@@ -5,14 +5,15 @@ public class Escola {
     private Integer id;
     private String nome;
     private String codigoInep;
-    private String cep;
     private Endereco endereco;
 
-    public Escola(String nome, String codigoInep, String cep, Endereco endereco) {
+    public Escola(String nome, String codigoInep, Endereco endereco) {
         this.nome = nome;
         this.codigoInep = codigoInep;
-        this.cep = cep;
         this.endereco = endereco;
+    }
+
+    public Escola() {
     }
 
     public String getNome() {
@@ -31,14 +32,6 @@ public class Escola {
         this.codigoInep = codigoInep;
     }
 
-    public String getCep() {
-        return cep;
-    }
-
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -55,26 +48,13 @@ public class Escola {
         this.endereco = endereco;
     }
 
-    public Regiao getRegiao() {
-        return regiao;
-    }
-
-    public void setRegiao(Regiao regiao) {
-        this.regiao = regiao;
-    }
-
     @Override
     public String toString() {
         return "Escola{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", codigoInep='" + codigoInep + '\'' +
-                ", ideb=" + ideb +
-                ", cep='" + cep + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
                 ", endereco=" + endereco +
-                ", regiao=" + regiao +
                 '}';
     }
 }
