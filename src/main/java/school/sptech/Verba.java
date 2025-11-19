@@ -1,22 +1,21 @@
 package school.sptech;
 
-import java.math.BigDecimal;
 import java.time.Year;
 
 public class Verba {
     private Integer id;
-    private Year ano;
-    private String portariaSME;
-    private BigDecimal valorPrimeiraParcela;
-    private BigDecimal valorSegundaParcela;
-    private BigDecimal valorTerceiraParcela;
-    private BigDecimal valorVulnerabilidade;
-    private BigDecimal valorExtraordinario;
-    private BigDecimal valorGremio;
+    private Integer ano;
+    private String nomeEscola;
+    private Double valorPrimeiraParcela;
+    private Double valorSegundaParcela;
+    private Double valorTerceiraParcela;
+    private Double valorVulnerabilidade;
+    private Double valorExtraordinario;
+    private Double valorGremio;
 
-    public Verba(Year ano, String portariaSME, BigDecimal valorPrimeiraParcela, BigDecimal valorSegundaParcela, BigDecimal valorTerceiraParcela, BigDecimal valorVulnerabilidade, BigDecimal valorExtraordinario, BigDecimal valorGremio) {
+    public Verba(Integer ano, String nomeEscola, Double valorPrimeiraParcela, Double valorSegundaParcela, Double valorTerceiraParcela, Double valorVulnerabilidade, Double valorExtraordinario, Double valorGremio) {
         this.ano = ano;
-        this.portariaSME = portariaSME;
+        this.nomeEscola = nomeEscola;
         this.valorPrimeiraParcela = valorPrimeiraParcela;
         this.valorSegundaParcela = valorSegundaParcela;
         this.valorTerceiraParcela = valorTerceiraParcela;
@@ -25,75 +24,76 @@ public class Verba {
         this.valorGremio = valorGremio;
     }
 
-    public Year getAno() {
+    public Integer getAno() {
         return ano;
     }
 
-    public void setAno(Year ano) {
+    public void setAno(Integer ano) {
         this.ano = ano;
     }
 
-    public String getPortariaSME() {
-        return portariaSME;
-    }
-
-    public void setPortariaSME(String portariaSME) {
-        this.portariaSME = portariaSME;
-    }
-
-    public BigDecimal getValorPrimeiraParcela() {
+    public Double getValorPrimeiraParcela() {
         return valorPrimeiraParcela;
     }
 
-    public void setValorPrimeiraParcela(BigDecimal valorPrimeiraParcela) {
+    public void setValorPrimeiraParcela(Double valorPrimeiraParcela) {
         this.valorPrimeiraParcela = valorPrimeiraParcela;
     }
 
-    public BigDecimal getValorSegundaParcela() {
+    public Double getValorSegundaParcela() {
         return valorSegundaParcela;
     }
 
-    public void setValorSegundaParcela(BigDecimal valorSegundaParcela) {
+    public void setValorSegundaParcela(Double valorSegundaParcela) {
         this.valorSegundaParcela = valorSegundaParcela;
     }
 
-    public BigDecimal getValorTerceiraParcela() {
+    public Double getValorTerceiraParcela() {
         return valorTerceiraParcela;
     }
 
-    public void setValorTerceiraParcela(BigDecimal valorTerceiraParcela) {
+    public void setValorTerceiraParcela(Double valorTerceiraParcela) {
         this.valorTerceiraParcela = valorTerceiraParcela;
     }
 
-    public BigDecimal getValorVulnerabilidade() {
+    public Double getValorVulnerabilidade() {
         return valorVulnerabilidade;
     }
 
-    public void setValorVulnerabilidade(BigDecimal valorVulnerabilidade) {
+    public void setValorVulnerabilidade(Double valorVulnerabilidade) {
         this.valorVulnerabilidade = valorVulnerabilidade;
     }
 
-    public BigDecimal getValorExtraordinario() {
+    public Double getValorExtraordinario() {
         return valorExtraordinario;
     }
 
-    public void setValorExtraordinario(BigDecimal valorExtraordinario) {
+    public void setValorExtraordinario(Double valorExtraordinario) {
         this.valorExtraordinario = valorExtraordinario;
     }
 
-    public BigDecimal getValorGremio() {
+    public Double getValorGremio() {
         return valorGremio;
     }
 
-    public void setValorGremio(BigDecimal valorGremio) {
+    public void setValorGremio(Double valorGremio) {
         this.valorGremio = valorGremio;
+    }
+
+    public String getNomeEscola() {
+        return nomeEscola;
+    }
+
+    public void setNomeEscola(String nomeEscola) {
+        this.nomeEscola = nomeEscola;
     }
 
     @Override
     public String toString() {
         return "Verba{" +
-                "ano=" + ano +
-                ", portariaSME='" + portariaSME + '\'' +
+                "id=" + id +
+                ", ano=" + ano +
+                ", nomeEscola='" + nomeEscola + '\'' +
                 ", valorPrimeiraParcela=" + valorPrimeiraParcela +
                 ", valorSegundaParcela=" + valorSegundaParcela +
                 ", valorTerceiraParcela=" + valorTerceiraParcela +
