@@ -8,13 +8,19 @@ public class Endereco {
     private String bairro;
     private String cep;
     private Regiao regiao;
+    private String codigoInep;
 
-    public Endereco(String logradouro, String numero, String bairro, String cep, Regiao regiao) {
+    public Endereco(String logradouro, String numero, String bairro, String cep, Regiao regiao, String codigoInep) {
         this.logradouro = logradouro;
         this.numero = numero;
         this.bairro = bairro;
         this.cep = cep;
         this.regiao = regiao;
+        this.codigoInep = codigoInep;
+    }
+
+    public Endereco() {
+
     }
 
     public String getLogradouro() {
@@ -63,6 +69,14 @@ public class Endereco {
 
     public void setRegiao(Regiao regiao) {
         this.regiao = regiao;
+    }
+
+    public String getCodigoInep() {
+        return codigoInep;
+    }
+
+    public void setCodigoInep(String codigoInep) {
+        this.codigoInep = codigoInep;
     }
 
     @Override
