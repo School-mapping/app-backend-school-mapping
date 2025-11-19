@@ -7,9 +7,15 @@ import javax.sql.DataSource;
 
 public class BancoRepositorio {
 
-    private static final String URL = System.getenv("DB_URL");
-    private static final String USER = System.getenv("DB_USER");
-    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+//    private static final String URL = System.getenv("DB_URL");
+//    private static final String USER = System.getenv("DB_USER");
+//    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+
+    private static final String URL = "jdbc:mysql://localhost:3306/SchoolMapping?useSSL=false&serverTimezone=UTC";
+    private static final String USER = "root";
+    private static final String PASSWORD = "admin";
+
+
 
     private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
@@ -18,9 +24,14 @@ public class BancoRepositorio {
 
         BasicDataSource basicDataSource = new BasicDataSource();
 
-        basicDataSource.setUrl(System.getenv("DB_URL"));
-        basicDataSource.setUsername(System.getenv("DB_USER"));
-        basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
+        basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        basicDataSource.setUrl(URL);
+        basicDataSource.setUsername(USER);
+        basicDataSource.setPassword(PASSWORD);
+
+//        basicDataSource.setUrl(System.getenv("DB_URL"));
+//        basicDataSource.setUsername(System.getenv("DB_USER"));
+//        basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
 
         this.dataSource = basicDataSource;
         this.jdbcTemplate = new JdbcTemplate(this.dataSource);
