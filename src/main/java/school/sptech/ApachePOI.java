@@ -24,6 +24,7 @@ public class ApachePOI {
 
     Integer linhasPuladas = 0;
     Integer linhasLidas = 0;
+    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     private static final Logger logger = LoggerFactory.getLogger(ApachePOI.class);
     BancoRepositorio bancoRepositorio = new BancoRepositorio();
@@ -37,13 +38,11 @@ public class ApachePOI {
         this.s3 = s3;
     }
 
-    String diretorioPastasTemporarias = "C:/Users/victo/OneDrive/Área de Trabalho/SchoolMapping/PlanilhaDados";
+    String diretorioPastasTemporarias = "C:/Users/kauan/Desktop/SchoolMapping/PlanilhasDados";
 
     //    Lendo Info_escolas_municipais
     public List<Escola> extrairEscolas() {
 
-
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
         List<Escola> listaEscolas = new ArrayList<>();
 
@@ -143,7 +142,6 @@ public class ApachePOI {
     }
 
     private String extrairLogradouro(String endereco) {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
         try {
             String[] logradouro = endereco.split(",");
@@ -156,8 +154,6 @@ public class ApachePOI {
     }
 
     private String extrairNumero(String endereco) {
-
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
         try {
             String[] divisor = endereco.split(",");
@@ -174,8 +170,6 @@ public class ApachePOI {
     }
 
     private String extrairBairro(String endereco) {
-
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
         try {
             String bairro = "";
@@ -215,8 +209,6 @@ public class ApachePOI {
     //    Metodo com Regex para encontrar o CEP no endereço.
     private String extrairCep(String endereco) {
 
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-
         try {
             if (endereco == null) return "";
 
@@ -240,8 +232,6 @@ public class ApachePOI {
     //    Lendo ideb_territorios-3550308-2023-EM
     public List<Ideb> extrairIdeb() {
 
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
         List<Ideb> listaDadosIdeb = new ArrayList<>();
 
         try (
@@ -256,7 +246,7 @@ public class ApachePOI {
             System.out.println("Iniciando leitura [ideb_territorios-3550308-2023-EM.xlsx]...");
 
             bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)",
-                timestamp, "INFO", "Iniciando leitura do arquivo Ideb.", "ApachePOI");
+                    timestamp, "INFO", "Iniciando leitura do arquivo Ideb.", "ApachePOI");
 
             Sheet folha = workbook.getSheet("escolas");
 
@@ -285,6 +275,79 @@ public class ApachePOI {
         }
 
         return listaDadosIdeb;
+    }
+
+    public List<Verba> extrairVerbas() {
+
+        List<PlanilhaVerba> listPlanilhas = new ArrayList<>();
+
+        PlanilhaVerba planilhaVerba2023 = new PlanilhaVerba("ptrf-2023.xlsx", 2, null, 3, 4, 5, 6,
+                8, 11, null, List.of(7, 9), List.of(10), 2023);
+        listPlanilhas.add(planilhaVerba2023);
+
+        PlanilhaVerba planilhaVerba2021 = new PlanilhaVerba("ptrf2021.xlsx", 2, null, 3, null, null, 4,
+                5, 8, null, List.of(6, 9), null, 2021);
+        listPlanilhas.add(planilhaVerba2021);
+
+
+        List<Verba> listaVerba = new ArrayList<>();
+
+        for (PlanilhaVerba planilha : listPlanilhas) {
+
+            try (InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilha.getNome());
+                 Workbook workbook = new XSSFWorkbook(arquivo)) {
+
+                Sheet sheet = workbook.getSheetAt(0);
+
+
+                for (int i = 4; i <= sheet.getLastRowNum(); i++) {
+                    Row linhaDados = sheet.getRow(i);
+
+                    String nome = linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()).getStringCellValue().trim().replace("-", "");
+                    String dre = linhaDados.getCell(planilha.getINDEX_INFO_DRE()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_DRE()).getStringCellValue().trim();
+                    String distrito = linhaDados.getCell(planilha.getINDEX_INFO_DISTRITO()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_DISTRITO()).getStringCellValue().trim();
+                    String subprefeitura = linhaDados.getCell(planilha.getINDEX_INFO_SUBPREFEITURA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_SUBPREFEITURA()).getStringCellValue().trim();
+                    Double primeiroRepasse = linhaDados.getCell(planilha.getINDEX_INFO_PRIMEIRO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_PRIMEIRO_REPASSE()).getNumericCellValue();
+                    Double segundoRepasse = linhaDados.getCell(planilha.getINDEX_INFO_SEGUNDO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_SEGUNDO_REPASSE()).getNumericCellValue();
+                    Double terceiroRepasse = linhaDados.getCell(planilha.getINDEX_INFO_TERCEIRO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_TERCEIRO_REPASSE()).getNumericCellValue();
+
+                    Double valorVulnerabilidade = 0.0;
+                    Double valorExtraordinario = 0.0;
+                    Double valorGremio = 0.0;
+
+                    if (planilha.getINDEX_INFO_VALOR_VULNERABILIDADE() != null) {
+                        for (Integer index : planilha.getINDEX_INFO_VALOR_VULNERABILIDADE()) {
+                            valorVulnerabilidade += linhaDados.getCell(index).getNumericCellValue();
+                        }
+                    }
+
+                    if (planilha.getINDEX_INFO_VALOR_EXTRAORDINARIO() != null) {
+                        for (Integer index : planilha.getINDEX_INFO_VALOR_EXTRAORDINARIO()) {
+                            valorExtraordinario += linhaDados.getCell(index).getNumericCellValue();
+                        }
+                    }
+
+                    if (planilha.getINDEX_INFO_VALOR_GREMIO() != null) {
+                        for (Integer index : planilha.getINDEX_INFO_VALOR_GREMIO()) {
+                            valorGremio += linhaDados.getCell(index).getNumericCellValue();
+                        }
+                    }
+
+                    listaVerba.add(new Verba(planilha.getAnoEmissao(), nome, primeiroRepasse, segundoRepasse, terceiroRepasse, valorVulnerabilidade, valorExtraordinario, valorGremio));
+
+                }
+
+
+                return listaVerba;
+
+
+            } catch (Exception e) {
+                logger.error("Erro ao realizar leitura do Verba.", e);
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao tentar iniciar leitura do Verba.", "ApachePOI");
+            }
+
+        }
+        return listaVerba;
     }
 
     public Integer getLinhasPuladas() {
