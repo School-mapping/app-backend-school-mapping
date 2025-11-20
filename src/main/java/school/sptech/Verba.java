@@ -24,6 +24,17 @@ public class Verba {
         this.valorGremio = valorGremio;
     }
 
+    public Verba() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Integer getAno() {
         return ano;
     }
