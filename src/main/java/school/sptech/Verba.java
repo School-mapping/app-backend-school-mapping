@@ -1,6 +1,10 @@
 package school.sptech;
 
 import java.time.Year;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Verba {
     private Integer id;
@@ -25,6 +29,30 @@ public class Verba {
     }
 
     public Verba() {
+    }
+
+    public String encontrarEscola(List<Escola> escolasList) {
+        Boolean similaridade;
+        String nomeEscola = "";
+        for (Escola escola : escolasList) {
+            similaridade = compararNomes(escola.getNome(), this.nomeEscola);
+            if (similaridade) {
+                nomeEscola = escola.getNome();
+                break;
+            }
+        }
+        return nomeEscola;
+    }
+
+    public Boolean compararNomes(String nome1, String nome2) {
+        Set<String> set1 = new HashSet<>(Arrays.asList(nome1.split(" ")));
+        Set<String> set2 = new HashSet<>(Arrays.asList(nome2.split(" ")));
+
+        Set<String> intersecao = new HashSet<>(set1);
+        intersecao.retainAll(set2);
+
+        Double taxaAcerto = (double) intersecao.size() / set1.size();
+        return taxaAcerto >= 1;
     }
 
     public Integer getId() {
