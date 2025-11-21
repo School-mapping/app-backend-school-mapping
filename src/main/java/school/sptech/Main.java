@@ -59,10 +59,18 @@ public class Main {
 
             Integer escolaId;
 
+            List<Escola> allEscolasDB = new ArrayList<>();
+
             try {
                 escolaId = bancoRepositorio.getJdbcTemplate().queryForObject("SELECT id FROM TB_Escolas WHERE codigo_inep = ?", Integer.class, endereco.getCodigoInep().trim());
             } catch (EmptyResultDataAccessException e) {
                 continue;
+            }
+
+            try {
+                allEscolasDB = bancoRepositorio.getJdbcTemplate().query("SELECT * FROM TB_Escolas", new BeanPropertyRowMapper<>(Escola.class));
+            } catch (EmptyResultDataAccessException e) {
+
             }
 
             List<Endereco> listEnderecosDB = bancoRepositorio.getJdbcTemplate().query("SELECT * FROM TB_Enderecos WHERE cep = ? and logradouro = ? and numero = ? and bairro = ? and id_regiao = ?", new BeanPropertyRowMapper<>(Endereco.class), endereco.getCep(), endereco.getLogradouro(), endereco.getNumero(), endereco.getBairro(), endereco.getRegiao().getId());
@@ -76,6 +84,16 @@ public class Main {
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Enderecos (logradouro, numero, cep, bairro, id_regiao) VALUES (?, ?, ?, ?, ?)", endereco.getLogradouro(), endereco.getNumero(), endereco.getCep(), endereco.getBairro(), endereco.getRegiao().getId());
                 logger.info("[{}] Inserindo endereço: {}", LocalDateTime.now(), endereco.getLogradouro());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Endereço inserido: " + endereco.getLogradouro(), "Main");
+            }
+
+            for (Escola escola : allEscolasDB) {
+                if (escola.getCodigoInep().equals(endereco.getCodigoInep())) {
+                    Integer enderecoId = bancoRepositorio.getJdbcTemplate().queryForObject("SELECT id FROM TB_Enderecos WHERE cep = ? and logradouro = ? and numero = ? and bairro = ? and id_regiao = ?", Integer.class, endereco.getCep(), endereco.getLogradouro(), endereco.getNumero(), endereco.getBairro(), endereco.getRegiao().getId());
+                    bancoRepositorio.getJdbcTemplate().update("UPDATE TB_Escolas SET id_endereco = ? WHERE codigo_inep = ?", enderecoId, endereco.getCodigoInep());
+                    logger.info("[{}] Atualizando endereço: {}", LocalDateTime.now(), endereco.getLogradouro());
+                    bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Endereço atualizado: " + endereco.getLogradouro(), "Main");
+                    break;
+                }
             }
 
         }
@@ -121,21 +139,18 @@ public class Main {
                 Boolean valorInserido = false;
                 List<Escola> escolasDB = bancoRepositorio.getJdbcTemplate().query("SELECT * FROM TB_Escolas", new BeanPropertyRowMapper<>(Escola.class));
 
-                // Primeiro tenta encontrar por nome exato
                 for (Escola escola : escolasDB) {
                     if (escola.getNome().equalsIgnoreCase(verba.getNomeEscola().trim())) {
                         Integer escolaId = escola.getId();
 
-                        // Verifica se já existe verba para esta escola e ano
                         List<Verba> listVerbasDB = bancoRepositorio.getJdbcTemplate().query(
-                            "SELECT * FROM TB_Verbas WHERE id_escola = ? AND ano = ?", 
-                            new BeanPropertyRowMapper<>(Verba.class), 
-                            escolaId, 
+                            "SELECT * FROM TB_Verbas WHERE id_escola = ? AND ano = ?",
+                            new BeanPropertyRowMapper<>(Verba.class),
+                            escolaId,
                             verba.getAno()
                         );
 
                         if (!listVerbasDB.isEmpty()) {
-                            // Atualiza verba existente
                             bancoRepositorio.getJdbcTemplate().update(
                                 "UPDATE TB_Verbas SET valor_primeira_parcela = ?, " +
                                 "valor_segunda_parcela = ?, " +
@@ -144,79 +159,76 @@ public class Main {
                                 "valor_extraordinario = ?, " +
                                 "valor_gremio = ? " +
                                 "WHERE id_escola = ? AND ano = ?",
-                                verba.getValorPrimeiraParcela(), 
-                                verba.getValorSegundaParcela(), 
-                                verba.getValorTerceiraParcela(), 
-                                verba.getValorVulnerabilidade(), 
-                                verba.getValorExtraordinario(), 
-                                verba.getValorGremio(), 
-                                escolaId, 
+                                verba.getValorPrimeiraParcela(),
+                                verba.getValorSegundaParcela(),
+                                verba.getValorTerceiraParcela(),
+                                verba.getValorVulnerabilidade(),
+                                verba.getValorExtraordinario(),
+                                verba.getValorGremio(),
+                                escolaId,
                                 verba.getAno()
                             );
                             logger.info("[{}] Verba atualizada para a escola: {} (ID: {})", LocalDateTime.now(), escola.getNome(), escolaId);
                         } else {
-                            // Insere nova verba
                             bancoRepositorio.getJdbcTemplate().update(
                                 "INSERT INTO TB_Verbas (id_escola, ano, valor_primeira_parcela, " +
                                 "valor_segunda_parcela, valor_terceira_parcela, valor_vulnerabilidade, " +
                                 "valor_extraordinario, valor_gremio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                                escolaId, 
-                                verba.getAno(), 
-                                verba.getValorPrimeiraParcela(), 
-                                verba.getValorSegundaParcela(), 
-                                verba.getValorTerceiraParcela(), 
-                                verba.getValorVulnerabilidade(), 
-                                verba.getValorExtraordinario(), 
+                                escolaId,
+                                verba.getAno(),
+                                verba.getValorPrimeiraParcela(),
+                                verba.getValorSegundaParcela(),
+                                verba.getValorTerceiraParcela(),
+                                verba.getValorVulnerabilidade(),
+                                verba.getValorExtraordinario(),
                                 verba.getValorGremio()
                             );
                             logger.info("[{}] Nova verba inserida para a escola: {} (ID: {})", LocalDateTime.now(), escola.getNome(), escolaId);
                         }
-                        
+
                         valorInserido = true;
                         contador++;
                         break;
                     }
                 }
 
-                // Se não encontrou por nome exato, tenta por similaridade
                 if (!valorInserido) {
                     String nomeEscolaSimilar = verba.encontrarEscola(escolasDB);
                     if (nomeEscolaSimilar != null && !nomeEscolaSimilar.isEmpty()) {
                         try {
                             Escola escolaSimilar = bancoRepositorio.getJdbcTemplate().queryForObject(
-                                "SELECT * FROM TB_Escolas WHERE nome = ?", 
-                                new BeanPropertyRowMapper<>(Escola.class), 
+                                "SELECT * FROM TB_Escolas WHERE nome = ?",
+                                new BeanPropertyRowMapper<>(Escola.class),
                                 nomeEscolaSimilar
                             );
 
                             if (escolaSimilar != null) {
-                                // Verifica se já existe verba para esta escola e ano
                                 List<Verba> listVerbasDB = bancoRepositorio.getJdbcTemplate().query(
-                                    "SELECT * FROM TB_Verbas WHERE id_escola = ? AND ano = ?", 
-                                    new BeanPropertyRowMapper<>(Verba.class), 
-                                    escolaSimilar.getId(), 
+                                    "SELECT * FROM TB_Verbas WHERE id_escola = ? AND ano = ?",
+                                    new BeanPropertyRowMapper<>(Verba.class),
+                                    escolaSimilar.getId(),
                                     verba.getAno()
                                 );
 
-                                if (listVerbasDB.isEmpty()) { // Só insere se não existir
+                                if (listVerbasDB.isEmpty()) {
                                     bancoRepositorio.getJdbcTemplate().update(
                                         "INSERT INTO TB_Verbas (id_escola, ano, valor_primeira_parcela, " +
                                         "valor_segunda_parcela, valor_terceira_parcela, valor_vulnerabilidade, " +
                                         "valor_extraordinario, valor_gremio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                                        escolaSimilar.getId(), 
-                                        verba.getAno(), 
-                                        verba.getValorPrimeiraParcela(), 
-                                        verba.getValorSegundaParcela(), 
-                                        verba.getValorTerceiraParcela(), 
-                                        verba.getValorVulnerabilidade(), 
-                                        verba.getValorExtraordinario(), 
+                                        escolaSimilar.getId(),
+                                        verba.getAno(),
+                                        verba.getValorPrimeiraParcela(),
+                                        verba.getValorSegundaParcela(),
+                                        verba.getValorTerceiraParcela(),
+                                        verba.getValorVulnerabilidade(),
+                                        verba.getValorExtraordinario(),
                                         verba.getValorGremio()
                                     );
-                                    logger.info("[{}] Nova verba inserida por similaridade para a escola: {} (ID: {})", 
-                                        LocalDateTime.now(), escolaSimilar.getNome(), escolaSimilar.getId());
+                                    logger.info("[{}] Nova verba inserida por similaridade para a escola: {} | Similar: {} (ID: {})",
+                                        LocalDateTime.now(), escolaSimilar.getNome(), verba.getNomeEscola(), escolaSimilar.getId());
                                     contador++;
                                 } else {
-                                    logger.info("[{}] Verba já existe para a escola similar: {} (ID: {})", 
+                                    logger.info("[{}] Verba já existe para a escola similar: {} (ID: {})",
                                         LocalDateTime.now(), escolaSimilar.getNome(), escolaSimilar.getId());
                                 }
                             }

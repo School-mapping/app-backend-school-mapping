@@ -52,7 +52,7 @@ public class Verba {
         intersecao.retainAll(set2);
 
         Double taxaAcerto = (double) intersecao.size() / set1.size();
-        return taxaAcerto >= 1;
+        return taxaAcerto >= 0.8;
     }
 
     public Integer getId() {
