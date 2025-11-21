@@ -4,8 +4,7 @@ package school.sptech;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlanilhaVerba {
-    private String nome;
+public class PlanilhaVerba extends Planilha {
     private Integer INDEX_INFO_NOME_ESCOLA;
     private Integer INDEX_INFO_CODIGO_INEP;
     private Integer INDEX_INFO_DRE;
@@ -17,12 +16,11 @@ public class PlanilhaVerba {
     private List<Integer> INDEX_INFO_VALOR_VULNERABILIDADE = new ArrayList<>();
     private List<Integer> INDEX_INFO_VALOR_EXTRAORDINARIO = new ArrayList<>();
     private List<Integer> INDEX_INFO_VALOR_GREMIO = new ArrayList<>();
-    private Integer anoEmissao;
 
-    public PlanilhaVerba(String nome,Integer INDEX_INFO_NOME_ESCOLA, Integer INDEX_INFO_CODIGO_INEP, Integer INDEX_INFO_DRE, Integer INDEX_INFO_DISTRITO,
+    public PlanilhaVerba(String nome, Integer anoEmissao, Integer INDEX_INFO_NOME_ESCOLA, Integer INDEX_INFO_CODIGO_INEP, Integer INDEX_INFO_DRE, Integer INDEX_INFO_DISTRITO,
                          Integer INDEX_INFO_SUBPREFEITURA, Integer INDEX_INFO_PRIMEIRO_REPASSE, Integer INDEX_INFO_SEGUNDO_REPASSE, Integer INDEX_INFO_TERCEIRO_REPASSE,
-                         List<Integer> INDEX_INFO_VALOR_VULNERABILIDADE, List<Integer> INDEX_INFO_VALOR_EXTRAORDINARIO, List<Integer> INDEX_INFO_VALOR_GREMIO, Integer anoEmissao) {
-        this.nome = nome;
+                         List<Integer> INDEX_INFO_VALOR_VULNERABILIDADE, List<Integer> INDEX_INFO_VALOR_EXTRAORDINARIO, List<Integer> INDEX_INFO_VALOR_GREMIO) {
+        super(nome, anoEmissao);
         this.INDEX_INFO_NOME_ESCOLA = INDEX_INFO_NOME_ESCOLA;
         this.INDEX_INFO_CODIGO_INEP = INDEX_INFO_CODIGO_INEP;
         this.INDEX_INFO_DRE = INDEX_INFO_DRE;
@@ -34,7 +32,6 @@ public class PlanilhaVerba {
         this.INDEX_INFO_VALOR_VULNERABILIDADE = INDEX_INFO_VALOR_VULNERABILIDADE;
         this.INDEX_INFO_VALOR_EXTRAORDINARIO = INDEX_INFO_VALOR_EXTRAORDINARIO;
         this.INDEX_INFO_VALOR_GREMIO = INDEX_INFO_VALOR_GREMIO;
-        this.anoEmissao = anoEmissao;
     }
 
     public Integer getINDEX_INFO_NOME_ESCOLA() {
@@ -125,22 +122,6 @@ public class PlanilhaVerba {
         this.INDEX_INFO_VALOR_GREMIO = INDEX_INFO_VALOR_GREMIO;
     }
 
-    public Integer getAnoEmissao() {
-        return anoEmissao;
-    }
-
-    public void setAnoEmissao(Integer anoEmissao) {
-        this.anoEmissao = anoEmissao;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     @Override
     public String toString() {
         return "PlanilhaVerba{" +
@@ -155,7 +136,6 @@ public class PlanilhaVerba {
                 ", INDEX_INFO_VALOR_VULNERABILIDADE=" + INDEX_INFO_VALOR_VULNERABILIDADE +
                 ", INDEX_INFO_VALOR_EXTRAORDINARIO=" + INDEX_INFO_VALOR_EXTRAORDINARIO +
                 ", INDEX_INFO_VALOR_GREMIO=" + INDEX_INFO_VALOR_GREMIO +
-                ", anoEmissao=" + anoEmissao +
                 '}';
     }
 }

@@ -14,6 +14,9 @@ public class Ideb {
         this.escola = escola;
     }
 
+    public Ideb() {
+    }
+
     public String getCodigoInep() {
         return codigoInep;
     }
