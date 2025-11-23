@@ -5,16 +5,21 @@ import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 
 public class SlackNotifier {
 
     public void notificar(String message) {
-         String token = System.getenv("SLACK_BOT_TOKEN");
-
+        // Carrega as variáveis de ambiente do arquivo .env
+        Dotenv dotenv = Dotenv.configure()
+                .directory("C:\\Users\\victo\\OneDrive\\Área de Trabalho\\SchoolMapping\\app-backend-school-mapping")
+                .load();
+                
+        String token = dotenv.get("SLACK_BOT_TOKEN");
+        String channelId = dotenv.get("SLACK_CHANNEL_ID");
+        
         Slack slack = Slack.getInstance();
-
-        String channelId = System.getenv("SLACK_CHANNEL_ID");
 
         try {
             MethodsClient methods = slack.methods(token);
