@@ -243,7 +243,11 @@ public class Main {
             }
         }
 
+        SlackNotifier slackNotifier = new SlackNotifier();
+
         logger.info("[{}] === INSERÇÃO DE VERBAS FINALIZADA ===", LocalDateTime.now());
+
+        slackNotifier.notificar(String.format("[%s] === NOVOS DADOS PRESENTES EM NOSSA APLICAÇÂO ===", LocalDateTime.now()));
 
         LocalDateTime agora = LocalDateTime.now();
 
