@@ -10,12 +10,11 @@ import java.io.IOException;
 public class SlackNotifier {
 
     public void notificar(String message) {
-        // String token = System.getenv("SLACK_BOT_TOKEN");
-        String token = "xoxb-SEU-TOKEN-AQUI";
+         String token = System.getenv("SLACK_BOT_TOKEN");
 
         Slack slack = Slack.getInstance();
 
-        String channelId = "#school_mapping_hub";
+        String channelId = System.getenv("SLACK_CHANNEL_ID");
 
         try {
             MethodsClient methods = slack.methods(token);

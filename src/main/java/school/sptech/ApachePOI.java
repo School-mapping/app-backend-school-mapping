@@ -38,7 +38,7 @@ public class ApachePOI {
         this.s3 = s3;
     }
 
-    String diretorioPastasTemporarias = "C:\\Users\\kauan\\Desktop\\SchoolMapping\\PlanilhasDados";
+    String diretorioPastasTemporarias = "C:\\Users\\victo\\OneDrive\\Área de Trabalho\\SchoolMapping\\PlanilhaDados";
 
     //    Lendo Info_escolas_municipais
     public List<Escola> extrairEscolas() {
