@@ -11,7 +11,7 @@ public class BancoRepositorio {
 //    private static final String USER = System.getenv("DB_USER");
 //    private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    private static final String URL = "jdbc:mysql://localhost:3306/SchoolMapping?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/SchoolMapping?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = "admin";
 
