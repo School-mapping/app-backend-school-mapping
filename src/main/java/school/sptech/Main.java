@@ -249,6 +249,7 @@ public class Main {
 
         slackNotifier.notificar(String.format("[%s] === NOVOS DADOS PRESENTES EM NOSSA APLICAÇÂO ===", LocalDateTime.now()));
 
+
         LocalDateTime agora = LocalDateTime.now();
 
         logger.info("-------------------- Logs -------------------");
