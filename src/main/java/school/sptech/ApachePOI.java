@@ -38,7 +38,7 @@ public class ApachePOI {
         this.s3 = s3;
     }
 
-    String diretorioPastasTemporarias = "C:/Users/kauan/Desktop/SchoolMapping/PlanilhasDados";
+   // String diretorioPastasTemporarias = "C:\\Users\\victo\\OneDrive\\Área de Trabalho\\SchoolMapping\\PlanilhaDados";
 
     //    Lendo Info_escolas_municipais
     public List<Escola> extrairEscolas() {
@@ -46,16 +46,16 @@ public class ApachePOI {
 
         List<Escola> listaEscolas = new ArrayList<>();
 
-        String key = "Info_escolas_municipais.xlsx";
+        String key = "Planilhas de Dados/Info_escolas_municipais.xlsx";
 
         try (
-//                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
-//                        .bucket(bucket)
-//                        .key(key)
-//                        .build());
+                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                        .bucket(bucket)
+                       .key(key)
+                     .build());
 
 //                Diretório testes - Kauan Luna
-                InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + key);
+ //               InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + key);
                 Workbook workbook = new XSSFWorkbook(arquivo)
         ) {
 
@@ -233,45 +233,61 @@ public class ApachePOI {
     public List<Ideb> extrairIdeb() {
 
         List<Ideb> listaDadosIdeb = new ArrayList<>();
+        List<PlanilhaIdeb> listaPlanilhasIdeb = new ArrayList<>();
 
-        try (
-//                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
-//                        .bucket(bucket)
-//                        .key("ideb_territorios-3550308-2023-EM.xlsx")
-//                        .build());
-                InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/ideb_territorios-3550308-2023-EM.xlsx");
-                Workbook workbook = new XSSFWorkbook(arquivo)
-        ) {
+        listaPlanilhasIdeb.add(new PlanilhaIdeb("ideb_territorios-3550308-2023-EM.xlsx", 2023, 0, 4, 5,
+                6, 7, 8));
 
-            System.out.println("Iniciando leitura [ideb_territorios-3550308-2023-EM.xlsx]...");
+        listaPlanilhasIdeb.add(new PlanilhaIdeb("ideb_territorios-3550308-2021-EM.xlsx", 2021, 0, 4, 5,
+                6, 7, 8));
 
-            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)",
-                    timestamp, "INFO", "Iniciando leitura do arquivo Ideb.", "ApachePOI");
+        for (PlanilhaIdeb planilhaIdeb : listaPlanilhasIdeb) {
 
-            Sheet folha = workbook.getSheet("escolas");
+            try (
+                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                       .bucket(bucket)
+                        .key(planilhaIdeb.getNome())
+                        .build());
+               //     InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilhaIdeb.getNome());
+                    Workbook workbook = new XSSFWorkbook(arquivo)
+            ) {
 
-            for (int i = 1; i <= folha.getLastRowNum(); i++) {
+                logger.info("[{}] === Iniciando leitura [{}] ===", timestamp, planilhaIdeb.getNome());
 
-                Row linha = folha.getRow(i);
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)",
+                        timestamp, "INFO", "Iniciando leitura do arquivo:" + planilhaIdeb.getNome(), "ApachePOI");
 
-                if (linha.getCell(0) == null || linha.getCell(4) == null) {
-                    linhasPuladas++;
-                    continue;
+                Sheet folha = workbook.getSheet("escolas");
+
+                for (int i = 1; i <= folha.getLastRowNum(); i++) {
+
+                    Row linha = folha.getRow(i);
+
+
+                    Long codigoInep = linha.getCell(planilhaIdeb.getINDEX_INEP_ID()) == null ? null : (long) linha.getCell(planilhaIdeb.getINDEX_INEP_ID()).getNumericCellValue();
+                    String codigoInepTratado = codigoInep == null ? "" : String.valueOf(codigoInep);
+                    Double ideb = linha.getCell(planilhaIdeb.getINDEX_NOTA_IDEB()) == null ? null : linha.getCell(planilhaIdeb.getINDEX_NOTA_IDEB()).getNumericCellValue();
+                    Double fluxo = linha.getCell(planilhaIdeb.getINDEX_NOTA_FLUXO()) == null ? null : linha.getCell(planilhaIdeb.getINDEX_NOTA_FLUXO()).getNumericCellValue();
+                    Double aprendizado = linha.getCell(planilhaIdeb.getINDEX_NOTA_APRENDIZADO()) == null ? null : linha.getCell(planilhaIdeb.getINDEX_NOTA_APRENDIZADO()).getNumericCellValue();
+                    Double mat = linha.getCell(planilhaIdeb.getINDEX_NOTA_MAT()) == null ? null : linha.getCell(planilhaIdeb.getINDEX_NOTA_MAT()).getNumericCellValue();
+                    Double lp = linha.getCell(planilhaIdeb.getINDEX_NOTA_LP()) == null ? null : linha.getCell(planilhaIdeb.getINDEX_NOTA_LP()).getNumericCellValue();
+
+
+                    if (codigoInepTratado.isEmpty()) {
+                        linhasPuladas++;
+                        continue;
+                    }
+
+                    Ideb idebEscolar = new Ideb(codigoInepTratado, ideb, planilhaIdeb.getAnoEmissao(), null);
+                    listaDadosIdeb.add(idebEscolar);
+
+                    linhasLidas++;
                 }
+            } catch (IOException e) {
 
-                linhasLidas++;
-
-                Long codigoInep = (long) linha.getCell(0).getNumericCellValue();
-                String codigoInepTratado = String.valueOf(codigoInep);
-                Double ideb = linha.getCell(4).getNumericCellValue();
-
-                Ideb idebEscolar = new Ideb(codigoInepTratado, ideb, LocalDate.now().getYear(), null);
-                listaDadosIdeb.add(idebEscolar);
+                logger.error("{} Erro ao tentar iniciar leitura do Ideb.", timestamp, e);
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
             }
-        } catch (IOException e) {
-
-            logger.error("{} Erro ao tentar iniciar leitura do Ideb.", timestamp, e);
-            bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao tentar iniciar leitura do Ideb.", "ApachePOI");
         }
 
         return listaDadosIdeb;
@@ -281,12 +297,12 @@ public class ApachePOI {
 
         List<PlanilhaVerba> listPlanilhas = new ArrayList<>();
 
-        PlanilhaVerba planilhaVerba2023 = new PlanilhaVerba("ptrf-2023.xlsx", 2, null, 3, 4, 5, 6,
-                8, 11, null, List.of(7, 9), List.of(10), 2023);
+        PlanilhaVerba planilhaVerba2023 = new PlanilhaVerba("ptrf-2023.xlsx", 2023, 2, null, 3, 4, 5, 6,
+                8, 11, null, List.of(7, 9), List.of(10));
         listPlanilhas.add(planilhaVerba2023);
 
-        PlanilhaVerba planilhaVerba2021 = new PlanilhaVerba("ptrf2021.xlsx", 2, null, 3, null, null, 4,
-                5, 8, null, List.of(6, 9), null, 2021);
+        PlanilhaVerba planilhaVerba2021 = new PlanilhaVerba("ptrf2021.xlsx", 2021, 2, null, 3, null, null, 4,
+                5, 8, null, List.of(6, 9), null);
         listPlanilhas.add(planilhaVerba2021);
 
 
@@ -294,7 +310,11 @@ public class ApachePOI {
 
         for (PlanilhaVerba planilha : listPlanilhas) {
 
-            try (InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilha.getNome());
+            //try (InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilha.getNome());
+               try(InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                       .bucket(bucket)
+                       .key(planilha.getNome())
+                       .build());
                  Workbook workbook = new XSSFWorkbook(arquivo)) {
 
                 Sheet sheet = workbook.getSheetAt(0);
@@ -303,17 +323,36 @@ public class ApachePOI {
                 for (int i = 4; i <= sheet.getLastRowNum(); i++) {
                     Row linhaDados = sheet.getRow(i);
 
-                    String nome = linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()).getStringCellValue().trim().replace("-", "");
+                    String nome = linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()).getStringCellValue().replaceAll("\\s*-", "").trim();
                     String dre = linhaDados.getCell(planilha.getINDEX_INFO_DRE()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_DRE()).getStringCellValue().trim();
-                    String distrito = linhaDados.getCell(planilha.getINDEX_INFO_DISTRITO()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_DISTRITO()).getStringCellValue().trim();
-                    String subprefeitura = linhaDados.getCell(planilha.getINDEX_INFO_SUBPREFEITURA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_SUBPREFEITURA()).getStringCellValue().trim();
-                    Double primeiroRepasse = linhaDados.getCell(planilha.getINDEX_INFO_PRIMEIRO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_PRIMEIRO_REPASSE()).getNumericCellValue();
-                    Double segundoRepasse = linhaDados.getCell(planilha.getINDEX_INFO_SEGUNDO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_SEGUNDO_REPASSE()).getNumericCellValue();
-                    Double terceiroRepasse = linhaDados.getCell(planilha.getINDEX_INFO_TERCEIRO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_TERCEIRO_REPASSE()).getNumericCellValue();
-
+                    String distrito = "";
+                    String subprefeitura = "";
+                    Double primeiroRepasse = 0.0;
+                    Double segundoRepasse = 0.0;
+                    Double terceiroRepasse = 0.0;
                     Double valorVulnerabilidade = 0.0;
                     Double valorExtraordinario = 0.0;
                     Double valorGremio = 0.0;
+
+                    if (planilha.getINDEX_INFO_DISTRITO() != null) {
+                        distrito = linhaDados.getCell(planilha.getINDEX_INFO_DISTRITO()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_DISTRITO()).getStringCellValue().trim();
+                    }
+
+                    if (planilha.getINDEX_INFO_SUBPREFEITURA() != null) {
+                        subprefeitura = linhaDados.getCell(planilha.getINDEX_INFO_SUBPREFEITURA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_SUBPREFEITURA()).getStringCellValue().trim();
+                    }
+
+                    if (planilha.getINDEX_INFO_PRIMEIRO_REPASSE() != null) {
+                        primeiroRepasse = linhaDados.getCell(planilha.getINDEX_INFO_PRIMEIRO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_PRIMEIRO_REPASSE()).getNumericCellValue();
+                    }
+
+                    if (planilha.getINDEX_INFO_SEGUNDO_REPASSE() != null) {
+                        segundoRepasse = linhaDados.getCell(planilha.getINDEX_INFO_SEGUNDO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_SEGUNDO_REPASSE()).getNumericCellValue();
+                    }
+
+                    if (planilha.getINDEX_INFO_TERCEIRO_REPASSE() != null) {
+                        terceiroRepasse = linhaDados.getCell(planilha.getINDEX_INFO_TERCEIRO_REPASSE()) == null ? 0.0 : linhaDados.getCell(planilha.getINDEX_INFO_TERCEIRO_REPASSE()).getNumericCellValue();
+                    }
 
                     if (planilha.getINDEX_INFO_VALOR_VULNERABILIDADE() != null) {
                         for (Integer index : planilha.getINDEX_INFO_VALOR_VULNERABILIDADE()) {
@@ -336,16 +375,10 @@ public class ApachePOI {
                     listaVerba.add(new Verba(planilha.getAnoEmissao(), nome, primeiroRepasse, segundoRepasse, terceiroRepasse, valorVulnerabilidade, valorExtraordinario, valorGremio));
 
                 }
-
-
-                return listaVerba;
-
-
             } catch (Exception e) {
-                logger.error("Erro ao realizar leitura do Verba.", e);
-                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro ao tentar iniciar leitura do Verba.", "ApachePOI");
+                logger.error("Erro ao realizar leitura da Verba.", e);
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", timestamp, "ERROR", "Erro realizar leitura da Verba.", "ApachePOI");
             }
-
         }
         return listaVerba;
     }
