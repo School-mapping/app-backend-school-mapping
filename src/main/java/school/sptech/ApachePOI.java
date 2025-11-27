@@ -38,7 +38,7 @@ public class ApachePOI {
         this.s3 = s3;
     }
 
-    String diretorioPastasTemporarias = "C:\\Users\\victo\\OneDrive\\Área de Trabalho\\SchoolMapping\\PlanilhaDados";
+   // String diretorioPastasTemporarias = "C:\\Users\\victo\\OneDrive\\Área de Trabalho\\SchoolMapping\\PlanilhaDados";
 
     //    Lendo Info_escolas_municipais
     public List<Escola> extrairEscolas() {
@@ -46,16 +46,16 @@ public class ApachePOI {
 
         List<Escola> listaEscolas = new ArrayList<>();
 
-        String key = "Info_escolas_municipais.xlsx";
+        String key = "Planilhas de Dados/Info_escolas_municipais.xlsx";
 
         try (
-//                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
-//                        .bucket(bucket)
-//                        .key(key)
-//                        .build());
+                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                        .bucket(bucket)
+                       .key(key)
+                     .build());
 
 //                Diretório testes - Kauan Luna
-                InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + key);
+ //               InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + key);
                 Workbook workbook = new XSSFWorkbook(arquivo)
         ) {
 
@@ -244,11 +244,11 @@ public class ApachePOI {
         for (PlanilhaIdeb planilhaIdeb : listaPlanilhasIdeb) {
 
             try (
-//                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
-//                        .bucket(bucket)
-//                        .key("planilhaIdeb.getNome()")
-//                        .build());
-                    InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilhaIdeb.getNome());
+                InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                       .bucket(bucket)
+                        .key(planilhaIdeb.getNome())
+                        .build());
+               //     InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilhaIdeb.getNome());
                     Workbook workbook = new XSSFWorkbook(arquivo)
             ) {
 
@@ -310,7 +310,11 @@ public class ApachePOI {
 
         for (PlanilhaVerba planilha : listPlanilhas) {
 
-            try (InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilha.getNome());
+            //try (InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilha.getNome());
+               try(InputStream arquivo = s3.getObject(GetObjectRequest.builder()
+                       .bucket(bucket)
+                       .key(planilha.getNome())
+                       .build());
                  Workbook workbook = new XSSFWorkbook(arquivo)) {
 
                 Sheet sheet = workbook.getSheetAt(0);
