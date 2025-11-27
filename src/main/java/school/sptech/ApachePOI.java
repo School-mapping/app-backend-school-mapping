@@ -243,10 +243,11 @@ public class ApachePOI {
 
         for (PlanilhaIdeb planilhaIdeb : listaPlanilhasIdeb) {
 
+            String key = "Planilhas de Dados/" + planilhaIdeb.getNome();
             try (
                 InputStream arquivo = s3.getObject(GetObjectRequest.builder()
                        .bucket(bucket)
-                        .key(planilhaIdeb.getNome())
+                        .key(key)
                         .build());
                //     InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilhaIdeb.getNome());
                     Workbook workbook = new XSSFWorkbook(arquivo)
@@ -310,10 +311,12 @@ public class ApachePOI {
 
         for (PlanilhaVerba planilha : listPlanilhas) {
 
+            String key = "Planilhas de Dados/" + planilha.getNome();
+
             //try (InputStream arquivo = new FileInputStream(diretorioPastasTemporarias + "/" + planilha.getNome());
                try(InputStream arquivo = s3.getObject(GetObjectRequest.builder()
                        .bucket(bucket)
-                       .key(planilha.getNome())
+                       .key(key)
                        .build());
                  Workbook workbook = new XSSFWorkbook(arquivo)) {
 
