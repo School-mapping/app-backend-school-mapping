@@ -1,11 +1,14 @@
 package school.sptech;
 
+import java.sql.Timestamp;
+
 public class Escola {
 
     private Integer id;
     private String nome;
     private String codigoInep;
     private Endereco endereco;
+    private Timestamp dataProcessamento;
 
     public Escola(String nome, String codigoInep, Endereco endereco) {
         this.nome = nome;
@@ -46,6 +49,14 @@ public class Escola {
 
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
+    }
+
+    public Timestamp getDataProcessamento() {
+        return dataProcessamento;
+    }
+
+    public void setDataProcessamento(Timestamp dataProcessamento) {
+        this.dataProcessamento = dataProcessamento;
     }
 
     @Override

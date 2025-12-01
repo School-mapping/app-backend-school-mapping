@@ -1,11 +1,14 @@
 package school.sptech;
 
+import java.sql.Timestamp;
+
 public class Ideb {
 
     private String codigoInep;
     private Double ideb;
     private Integer anoEmissao;
     private Escola escola;
+    private Timestamp dataProcessamento;
 
     public Ideb(String codigoInep, Double ideb, Integer anoEmissao, Escola escola) {
         this.codigoInep = codigoInep;
@@ -47,6 +50,14 @@ public class Ideb {
 
     public void setEscola(Escola escola) {
         this.escola = escola;
+    }
+
+    public Timestamp getDataProcessamento() {
+        return dataProcessamento;
+    }
+
+    public void setDataProcessamento(Timestamp dataProcessamento) {
+        this.dataProcessamento = dataProcessamento;
     }
 
     @Override
