@@ -1,5 +1,7 @@
 package school.sptech;
 
+import java.sql.Timestamp;
+
 public class Endereco {
 
     private Integer id;
@@ -9,6 +11,7 @@ public class Endereco {
     private String cep;
     private Regiao regiao;
     private String codigoInep;
+    private Timestamp dataProcessamento;
 
     public Endereco(String logradouro, String numero, String bairro, String cep, Regiao regiao, String codigoInep) {
         this.logradouro = logradouro;
@@ -77,6 +80,14 @@ public class Endereco {
 
     public void setCodigoInep(String codigoInep) {
         this.codigoInep = codigoInep;
+    }
+
+    public Timestamp getDataProcessamento() {
+        return dataProcessamento;
+    }
+
+    public void setDataProcessamento(Timestamp dataProcessamento) {
+        this.dataProcessamento = dataProcessamento;
     }
 
     @Override

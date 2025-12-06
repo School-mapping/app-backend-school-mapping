@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +43,8 @@ public class Main {
 
 
             if (adicionarEscola) {
-                String sql = "INSERT INTO TB_Escolas (nome, codigo_inep) VALUES (?, ?)";
-                bancoRepositorio.getJdbcTemplate().update(sql, escola.getNome(), escola.getCodigoInep());
+                String sql = "INSERT INTO TB_Escolas (nome, codigo_inep, data_processamento) VALUES (?, ?, ?)";
+                bancoRepositorio.getJdbcTemplate().update(sql, escola.getNome(), escola.getCodigoInep(), LocalDate.now());
                 logger.info("[{}] Inserindo escola: {}", LocalDateTime.now(), escola.getNome());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Escola inserida: " + escola.getNome(), "Main");
             }
@@ -120,7 +121,7 @@ public class Main {
                 }
 
                 logger.info("[{}] Inserindo ideb: {}", LocalDateTime.now(), ideb.getIdeb());
-                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Ideb (id_escola, nota, ano_emissao) VALUES (?, ?, ?)", escolaId, ideb.getIdeb(), ideb.getAnoEmissao());
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Ideb (id_escola, nota, ano_emissao, data_processamento) VALUES (?, ?, ?, ?)", escolaId, ideb.getIdeb(), ideb.getAnoEmissao(), LocalDate.now());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Ideb inserido: " + ideb.getIdeb(), "Main");
                 contador++;
             } catch (EmptyResultDataAccessException e) {
@@ -173,7 +174,7 @@ public class Main {
                             bancoRepositorio.getJdbcTemplate().update(
                                 "INSERT INTO TB_Verbas (id_escola, ano, valor_primeira_parcela, " +
                                 "valor_segunda_parcela, valor_terceira_parcela, valor_vulnerabilidade, " +
-                                "valor_extraordinario, valor_gremio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                                "valor_extraordinario, valor_gremio, data_processamento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                 escolaId,
                                 verba.getAno(),
                                 verba.getValorPrimeiraParcela(),
@@ -181,7 +182,8 @@ public class Main {
                                 verba.getValorTerceiraParcela(),
                                 verba.getValorVulnerabilidade(),
                                 verba.getValorExtraordinario(),
-                                verba.getValorGremio()
+                                verba.getValorGremio(),
+                                LocalDate.now()
                             );
                             logger.info("[{}] Nova verba inserida para a escola: {} (ID: {})", LocalDateTime.now(), escola.getNome(), escolaId);
                         }
@@ -214,7 +216,7 @@ public class Main {
                                     bancoRepositorio.getJdbcTemplate().update(
                                         "INSERT INTO TB_Verbas (id_escola, ano, valor_primeira_parcela, " +
                                         "valor_segunda_parcela, valor_terceira_parcela, valor_vulnerabilidade, " +
-                                        "valor_extraordinario, valor_gremio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                                        "valor_extraordinario, valor_gremio, data_processamento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                         escolaSimilar.getId(),
                                         verba.getAno(),
                                         verba.getValorPrimeiraParcela(),
@@ -222,7 +224,8 @@ public class Main {
                                         verba.getValorTerceiraParcela(),
                                         verba.getValorVulnerabilidade(),
                                         verba.getValorExtraordinario(),
-                                        verba.getValorGremio()
+                                        verba.getValorGremio(),
+                                        LocalDate.now()
                                     );
                                     logger.info("[{}] Nova verba inserida por similaridade para a escola: {} | Similar: {} (ID: {})",
                                         LocalDateTime.now(), escolaSimilar.getNome(), verba.getNomeEscola(), escolaSimilar.getId());
