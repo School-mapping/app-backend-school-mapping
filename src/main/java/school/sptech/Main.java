@@ -82,7 +82,7 @@ public class Main {
             }
 
             if (escolaId != null) {
-                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Enderecos (logradouro, numero, cep, bairro, id_regiao, data_processamento) VALUES (?, ?, ?, ?, ?, ?)", endereco.getLogradouro(), endereco.getNumero(), endereco.getCep(), endereco.getBairro(), endereco.getRegiao().getId(), LocalDate.now());
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Enderecos (logradouro, numero, cep, bairro, id_regiao) VALUES (?, ?, ?, ?, ?)", endereco.getLogradouro(), endereco.getNumero(), endereco.getCep(), endereco.getBairro(), endereco.getRegiao().getId());
                 logger.info("[{}] Inserindo endereço: {}", LocalDateTime.now(), endereco.getLogradouro());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Endereço inserido: " + endereco.getLogradouro(), "Main");
             }
