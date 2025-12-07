@@ -1,6 +1,7 @@
 package school.sptech;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ public class Verba {
     private Double valorVulnerabilidade;
     private Double valorExtraordinario;
     private Double valorGremio;
-    private Timestamp dataProcessamento;
+    private LocalDateTime dataProcessamento;
 
     public Verba(Integer ano, String nomeEscola, Double valorPrimeiraParcela, Double valorSegundaParcela, Double valorTerceiraParcela, Double valorVulnerabilidade, Double valorExtraordinario, Double valorGremio) {
         this.ano = ano;
@@ -129,11 +130,11 @@ public class Verba {
         this.nomeEscola = nomeEscola;
     }
 
-    public Timestamp getDataProcessamento() {
+    public LocalDateTime getDataProcessamento() {
         return dataProcessamento;
     }
 
-    public void setDataProcessamento(Timestamp dataProcessamento) {
+    public void setDataProcessamento(LocalDateTime dataProcessamento) {
         this.dataProcessamento = dataProcessamento;
     }
 
