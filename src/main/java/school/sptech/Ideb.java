@@ -1,6 +1,7 @@
 package school.sptech;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Ideb {
 
@@ -8,7 +9,7 @@ public class Ideb {
     private Double ideb;
     private Integer anoEmissao;
     private Escola escola;
-    private Timestamp dataProcessamento;
+    private LocalDateTime dataProcessamento;
 
     public Ideb(String codigoInep, Double ideb, Integer anoEmissao, Escola escola) {
         this.codigoInep = codigoInep;
@@ -52,11 +53,11 @@ public class Ideb {
         this.escola = escola;
     }
 
-    public Timestamp getDataProcessamento() {
+    public LocalDateTime getDataProcessamento() {
         return dataProcessamento;
     }
 
-    public void setDataProcessamento(Timestamp dataProcessamento) {
+    public void setDataProcessamento(LocalDateTime dataProcessamento) {
         this.dataProcessamento = dataProcessamento;
     }
 
