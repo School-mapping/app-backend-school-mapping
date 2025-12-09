@@ -121,7 +121,7 @@ public class Main {
                 }
 
                 logger.info("[{}] Inserindo ideb: {}", LocalDateTime.now(), ideb.getIdeb());
-                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Ideb (id_escola, nota, ano_emissao, data_processamento) VALUES (?, ?, ?, ?)", escolaId, ideb.getIdeb(), ideb.getAnoEmissao(), LocalDateTime.now());
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Ideb (id_escola, nota, fluxo, ano_emissao, data_processamento) VALUES (?, ?, ?, ?)", escolaId, ideb.getIdeb(), ideb.getFluxo(),  ideb.getAnoEmissao(), LocalDateTime.now());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Ideb inserido: " + ideb.getIdeb(), "Main");
                 contador++;
             } catch (EmptyResultDataAccessException e) {

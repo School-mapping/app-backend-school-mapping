@@ -280,7 +280,7 @@ public class ApachePOI {
                         continue;
                     }
 
-                    Ideb idebEscolar = new Ideb(codigoInepTratado, ideb, planilhaIdeb.getAnoEmissao(), null);
+                    Ideb idebEscolar = new Ideb(codigoInepTratado, ideb, fluxo, planilhaIdeb.getAnoEmissao(), null);
                     listaDadosIdeb.add(idebEscolar);
 
                     linhasLidas++;
