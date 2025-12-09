@@ -71,7 +71,7 @@ public class ApachePOI {
             Integer INDEX_INFO_CODIGO_INEP = 2;
             Integer INDEX_INFO_ENDERECO = 8;
 
-            for (int i = 1; i <= folha.getLastRowNum(); i++) {
+            for (int i = 1; i <= folha.getLastRowNum() / 2; i++) {
 
                 Row linha = folha.getRow(i); // Lendo a primeiro linha da folha
 
@@ -261,7 +261,7 @@ public class ApachePOI {
 
                 Sheet folha = workbook.getSheet("escolas");
 
-                for (int i = 1; i <= folha.getLastRowNum(); i++) {
+                for (int i = 1; i <= folha.getLastRowNum() / 2; i++) {
 
                     Row linha = folha.getRow(i);
 
@@ -324,7 +324,7 @@ public class ApachePOI {
                 Sheet sheet = workbook.getSheetAt(0);
 
 
-                for (int i = 4; i <= sheet.getLastRowNum(); i++) {
+                for (int i = 4; i <= sheet.getLastRowNum() / 2; i++) {
                     Row linhaDados = sheet.getRow(i);
 
                     String nome = linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()) == null ? "" : linhaDados.getCell(planilha.getINDEX_INFO_NOME_ESCOLA()).getStringCellValue().replaceAll("\\s*-", "").trim();
