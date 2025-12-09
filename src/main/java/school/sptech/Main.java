@@ -44,7 +44,7 @@ public class Main {
 
             if (adicionarEscola) {
                 String sql = "INSERT INTO TB_Escolas (nome, codigo_inep, data_processamento) VALUES (?, ?, ?)";
-                bancoRepositorio.getJdbcTemplate().update(sql, escola.getNome(), escola.getCodigoInep(), LocalDate.now());
+                bancoRepositorio.getJdbcTemplate().update(sql, escola.getNome(), escola.getCodigoInep(), LocalDateTime.now());
                 logger.info("[{}] Inserindo escola: {}", LocalDateTime.now(), escola.getNome());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Escola inserida: " + escola.getNome(), "Main");
             }
@@ -121,7 +121,7 @@ public class Main {
                 }
 
                 logger.info("[{}] Inserindo ideb: {}", LocalDateTime.now(), ideb.getIdeb());
-                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Ideb (id_escola, nota, ano_emissao, data_processamento) VALUES (?, ?, ?, ?)", escolaId, ideb.getIdeb(), ideb.getAnoEmissao(), LocalDate.now());
+                bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Ideb (id_escola, nota, ano_emissao, data_processamento) VALUES (?, ?, ?, ?)", escolaId, ideb.getIdeb(), ideb.getAnoEmissao(), LocalDateTime.now());
                 bancoRepositorio.getJdbcTemplate().update("INSERT INTO TB_Logs (data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Ideb inserido: " + ideb.getIdeb(), "Main");
                 contador++;
             } catch (EmptyResultDataAccessException e) {
@@ -183,7 +183,7 @@ public class Main {
                                 verba.getValorVulnerabilidade(),
                                 verba.getValorExtraordinario(),
                                 verba.getValorGremio(),
-                                LocalDate.now()
+                                LocalDateTime.now()
                             );
                             logger.info("[{}] Nova verba inserida para a escola: {} (ID: {})", LocalDateTime.now(), escola.getNome(), escolaId);
                         }
@@ -225,7 +225,7 @@ public class Main {
                                         verba.getValorVulnerabilidade(),
                                         verba.getValorExtraordinario(),
                                         verba.getValorGremio(),
-                                        LocalDate.now()
+                                        LocalDateTime.now()
                                     );
                                     logger.info("[{}] Nova verba inserida por similaridade para a escola: {} | Similar: {} (ID: {})",
                                         LocalDateTime.now(), escolaSimilar.getNome(), verba.getNomeEscola(), escolaSimilar.getId());

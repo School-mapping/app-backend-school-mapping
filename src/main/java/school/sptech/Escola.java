@@ -1,6 +1,9 @@
 package school.sptech;
 
+import org.springframework.cglib.core.Local;
+
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Escola {
 
@@ -8,7 +11,7 @@ public class Escola {
     private String nome;
     private String codigoInep;
     private Endereco endereco;
-    private Timestamp dataProcessamento;
+    private LocalDateTime dataProcessamento;
 
     public Escola(String nome, String codigoInep, Endereco endereco) {
         this.nome = nome;
@@ -51,11 +54,11 @@ public class Escola {
         this.endereco = endereco;
     }
 
-    public Timestamp getDataProcessamento() {
+    public LocalDateTime getDataProcessamento() {
         return dataProcessamento;
     }
 
-    public void setDataProcessamento(Timestamp dataProcessamento) {
+    public void setDataProcessamento(LocalDateTime dataProcessamento) {
         this.dataProcessamento = dataProcessamento;
     }
 
