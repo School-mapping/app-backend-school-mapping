@@ -46,8 +46,8 @@ public class ApachePOI {
 
         List<Escola> listaEscolas = new ArrayList<>();
 
-//        String key = "Planilhas de Dados/Info_escolas_municipais.xlsx";
-        String key = "Info_escolas_municipais.xlsx";
+        String key = "Planilhas de Dados/Info_escolas_municipais.xlsx";
+        // String key = "Info_escolas_municipais.xlsx";
 
         try (
                 InputStream arquivo = s3.getObject(GetObjectRequest.builder()
