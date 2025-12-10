@@ -10,21 +10,18 @@ import java.io.IOException;
 
 public class SlackNotifier {
 
+    private BancoRepositorio bancoRepositorio = new BancoRepositorio();;
+
     public void notificar(String message) {
-        // Carrega as variáveis de ambiente do arquivo .env
-        Dotenv dotenv = Dotenv.configure()
-                .directory("C:\\Users\\victo\\OneDrive\\Área de Trabalho\\SchoolMapping\\app-backend-school-mapping")
-                .load();
-                
-        String token = dotenv.get("SLACK_BOT_TOKEN");
-        String channelId = dotenv.get("SLACK_CHANNEL_ID");
+
+        String token = bancoRepositorio.getJdbcTemplate().queryForObject("SELECT token FROM TB_Bot_Slack WHERE id = 1", String.class);
         
         Slack slack = Slack.getInstance();
 
         try {
             MethodsClient methods = slack.methods(token);
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-                    .channel(channelId)
+                    .channel("school_mapping_hub")
                     .text(message)
                     .build();
 
